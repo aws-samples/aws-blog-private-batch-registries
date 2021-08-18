@@ -1,0 +1,22 @@
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+packages:
+- jq
+- aws-cli
+
+runcmd:
+- /usr/bin/aws configure set region $(curl http://169.254.169.254/latest/meta-data/placement/region)
+- export SECRET_STRING=$(/usr/bin/aws secretsmanager get-secret-value --secret-id batch_secret_example | jq -r '.SecretString')
+- export USERNAME=$(echo $SECRET_STRING | jq -r '.username')
+- export PASSWORD=$(echo $SECRET_STRING | jq -r '.password')
+- export REGISTRY_URL=$(echo $SECRET_STRING | jq -r '.registry_url')
+- echo $PASSWORD | docker login --username $USERNAME --password-stdin $REGISTRY_URL
+- export AUTH=$(cat ~/.docker/config.json | jq -c .auths)
+- echo 'ECS_ENGINE_AUTH_TYPE=dockercfg' >> /etc/ecs/ecs.config
+- echo "ECS_ENGINE_AUTH_DATA=$AUTH" >> /etc/ecs/ecs.config
+
+--==MYBOUNDARY==--
