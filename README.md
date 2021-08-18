@@ -1,11 +1,6 @@
-## My Project
+## Authenticating with private container registries using AWS Batch
 
-TODO: Fill this README out!
-
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
+The following repository contains the artifacts used in the blog post 'Authenticating with private container registries using AWS Batch'
 
 ## Security
 
